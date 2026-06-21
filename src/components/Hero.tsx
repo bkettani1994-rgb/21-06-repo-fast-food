@@ -1,6 +1,7 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import { useRef } from "react";
 import { ArrowRight, Star, Clock, Flame } from "lucide-react";
+import { FuturisticBackground } from "./FuturisticBackground";
 
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -10,8 +11,39 @@ export function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
 
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const rect = ref.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set(e.clientX - rect.left);
+    mouseY.set(e.clientY - rect.top);
+  };
+
   return (
-    <section ref={ref} className="relative min-h-[100svh] flex items-center overflow-hidden bg-noise">
+    <section
+      ref={ref}
+      onPointerMove={handlePointerMove}
+      className="relative min-h-[100svh] flex items-center overflow-hidden bg-noise"
+    >
+      <FuturisticBackground />
+
+      {/* Mouse-following spotlight */}
+      <motion.div
+        className="absolute w-[36rem] h-[36rem] rounded-full pointer-events-none mix-blend-screen"
+        style={{
+          left: springX,
+          top: springY,
+          x: "-50%",
+          y: "-50%",
+          background:
+            "radial-gradient(circle, rgba(255,140,60,0.25) 0%, rgba(255,194,61,0.08) 45%, transparent 70%)",
+        }}
+      />
+
       <motion.div
         style={{ y: y2, opacity }}
         className="absolute -top-20 -left-20 w-[28rem] h-[28rem] bg-ember/30 rounded-full blur-[120px]"
@@ -41,8 +73,20 @@ export function Hero() {
             <span>Livraison express en 18 minutes</span>
           </motion.div>
 
-          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
-            Du goût qui <span className="text-gradient">enflamme</span> tes papilles
+          <h1 className="relative text-5xl sm:text-6xl lg:text-7xl font-bold leading-[1.05] mb-6">
+            Du goût qui{" "}
+            <span className="relative inline-block text-gradient">
+              enflamme
+              <motion.span
+                aria-hidden
+                className="absolute inset-0 text-gradient blur-md"
+                animate={{ opacity: [0.4, 0.9, 0.4] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+              >
+                enflamme
+              </motion.span>
+            </span>{" "}
+            tes papilles
           </h1>
 
           <p className="text-lg text-cream/70 max-w-md mb-8">
@@ -98,6 +142,41 @@ export function Hero() {
             className="relative w-[280px] sm:w-[380px] lg:w-[460px] aspect-square rounded-full"
           >
             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-ember via-flame to-gold blur-2xl opacity-50 animate-pulse-glow" />
+
+            {/* Rotating neon ring */}
+            <motion.svg
+              viewBox="0 0 100 100"
+              className="absolute -inset-4 w-[calc(100%+2rem)] h-[calc(100%+2rem)]"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+            >
+              <circle
+                cx="50"
+                cy="50"
+                r="48"
+                fill="none"
+                stroke="url(#neon-gradient)"
+                strokeWidth="0.6"
+                strokeDasharray="6 10"
+              />
+              <defs>
+                <linearGradient id="neon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#ff5b2e" />
+                  <stop offset="100%" stopColor="#ffc23d" />
+                </linearGradient>
+              </defs>
+            </motion.svg>
+
+            {/* Counter-rotating dashed ring for depth */}
+            <motion.svg
+              viewBox="0 0 100 100"
+              className="absolute -inset-8 w-[calc(100%+4rem)] h-[calc(100%+4rem)] opacity-40"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            >
+              <circle cx="50" cy="50" r="49" fill="none" stroke="#ffc23d" strokeWidth="0.3" strokeDasharray="1 4" />
+            </motion.svg>
+
             <img
               src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=900&auto=format&fit=crop"
               alt="Burger signature"
