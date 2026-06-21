@@ -3,12 +3,6 @@ import { motion } from "framer-motion";
 import { Flame, LayoutDashboard, Menu as MenuIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
-const links = [
-  { href: "#menu", label: "Menu" },
-  { href: "#tracking", label: "Suivi commande" },
-  { href: "#about", label: "À propos" },
-];
-
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
@@ -36,14 +30,6 @@ export function Navbar() {
           Blaze<span className="text-gradient">Bite</span>
         </a>
 
-        <nav className="hidden md:flex items-center gap-8">
-          {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-medium text-cream/80 hover:text-cream transition-colors">
-              {l.label}
-            </a>
-          ))}
-        </nav>
-
         <div className="hidden md:flex items-center gap-3">
           <Link
             to="/dashboard"
@@ -64,11 +50,6 @@ export function Navbar() {
           animate={{ opacity: 1, height: "auto" }}
           className="md:hidden glass-strong mt-2 mx-4 rounded-2xl p-4 flex flex-col gap-3"
         >
-          {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)} className="py-2 text-cream/80">
-              {l.label}
-            </a>
-          ))}
           <Link to="/dashboard" onClick={() => setOpen(false)} className="py-2 font-semibold text-gold">
             Espace restaurant
           </Link>
